@@ -1,10 +1,12 @@
 import os
 from flask import Flask
-from .api.item.item_controller import item_bp
+from dotenv import load_dotenv
+from app.api.item.item_controller import item_bp
 
 
 def init_app():
-
+    load_dotenv()
+    
     app = Flask(__name__)
     port = os.getenv("PORT")
     debug = os.getenv("DEV_ENV")

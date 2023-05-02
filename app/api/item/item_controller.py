@@ -1,5 +1,10 @@
+import json
 from flask import jsonify, Blueprint, request
-from .item_service import ItemService
+from .item_service import query, get_by_id, remove, update, add
+from app.models.FilterBy_model import FilterBy
+from app.encoders.Item_encoder import ItemEncoder
+from app.dtos.Item_dto import ItemDTO
+from app.models.Item_model import Item
 
 item_bp = Blueprint("item", __name__)
 
@@ -7,18 +12,23 @@ item_bp = Blueprint("item", __name__)
 @item_bp.route("/", methods=["GET"])
 async def get_items():
     try:
-        items = await ItemService.query()
-        return jsonify(items), 200
+        filter_by = FilterBy(
+            txt=request.args.get("txt", "")
+        )
+        items = await query(filter_by)
+        json_data = json.dumps(items, cls=ItemEncoder)
+        return json_data, 200
     except Exception as e:
-        print(f"error: {e}")
-        return jsonify({"message": f"Internal error"}), 500
+        print(f"error in item controller: {e}")
+        return jsonify({"message": f"Internal server error"}), 500
 
 
 @item_bp.route("/<item_id>", methods=["GET"])
 async def get_item_by_id(item_id):
     try:
-        item = await ItemService.get_by_id(item_id)
-        return jsonify(item), 200
+        item = await get_by_id(item_id)
+        json_data = json.dumps(item, cls=ItemEncoder)
+        return json_data, 200
     except Exception as e:
         print(f"error: {e}")
         return jsonify({"message": f"Internal error"}), 500
@@ -27,10 +37,10 @@ async def get_item_by_id(item_id):
 @item_bp.route("/<item_id>", methods=["DELETE"])
 async def remove_item(item_id):
     try:
-        id = await ItemService.remove_item(item_id)
+        id = await remove(item_id)
         return jsonify({"removedId": id}), 201
     except Exception as e:
-        print(f"error: {e}")
+        print(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
 
 
@@ -38,10 +48,17 @@ async def remove_item(item_id):
 async def add_item():
     try:
         body = request.get_json()
-        item = await ItemService.add_item(body)
-        return jsonify(item), 201
+        item_dto = ItemDTO(
+            name=body["name"],
+            price=body["price"],
+            img_url=body["imgUrl"]
+        ).to_dict()
+
+        item = await add(item_dto)
+        json_data = json.dumps(item, cls=ItemEncoder)
+        return json_data, 201
     except Exception as e:
-        print(f"error: {e}")
+        print(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
 
 
@@ -49,8 +66,16 @@ async def add_item():
 async def update_item():
     try:
         body = request.get_json()
-        item = await ItemService.update_item(body)
-        return jsonify(item), 201
+        id = body["_id"]
+        item_dto = ItemDTO(
+            name=body["name"],
+            price=body["price"],
+            img_url=body["imgUrl"]
+        ).to_dict()
+
+        item = await update(id, item_dto)
+        json_data = json.dumps(item, cls=ItemEncoder)
+        return json_data, 201
     except Exception as e:
-        print(f"error: {e}")
+        print(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
