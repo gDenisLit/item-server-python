@@ -2,3 +2,4 @@ flask
 flask-cors
 flask[async]
 pymongo
+bcrypt

@@ -1,87 +1,49 @@
-package auth
+from flask import jsonify, Blueprint, request
+from app.services import logger_service
+from .auth_service import login
+from app.models.User_model import User
 
-import (
-	"github.com/gDenisLit/item-server-go/cmd/dtos"
-	"github.com/gDenisLit/item-server-go/cmd/models"
-	"github.com/gDenisLit/item-server-go/cmd/services"
-	"github.com/gofiber/fiber/v2"
-)
+auth_bp = Blueprint("auth", __name__)
 
-func OnLogin(ctx *fiber.Ctx) error {
 
-	credentials := new(dtos.LoginDTO)
-	err := ctx.BodyParser(credentials)
-	if err != nil {
-		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"error": "Invalid credentials object",
-		})
-	}
+@auth_bp.before_request
+def log():
+    # Log something before each request
+    logger_service.info('Got request to auth api')
+    return
 
-	services.Log.Info("Login request", credentials)
-	user, err := Login(credentials)
-	if err != nil {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid username or password",
-		})
-	}
-	return sendMiniUser(ctx, user)
-}
 
-func OnSignup(ctx *fiber.Ctx) error {
+@auth_bp.route("/login", methods=["POST"])
+async def onLogin():
+    try:
+        body = request.get_json()
+        credentials = User.login_credentials(
+            body["username"],
+            body["password"]
+        )
 
-	credentials := new(dtos.SignupDTO)
-	err := ctx.BodyParser(credentials)
-	if err != nil {
-		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"error": "Invalid credentials object",
-		})
-	}
+        user = await login(credentials)
+        logger_service.info(f"user loggedin | {user.to_dict()}")
 
-	services.Log.Info("Signup request", credentials)
-	user, err := Signup(credentials)
-	if err != nil {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-	return sendMiniUser(ctx, user)
-}
+        return jsonify(user.to_dict()), 203
+    except Exception as e:
+        logger_service.error(f"error in user controller: {e}")
+        return jsonify({"message": f"Internal error"}), 500
 
-func sendMiniUser(ctx *fiber.Ctx, user *models.User) error {
-	miniUser := getMiniUser(user)
-	loginToken, err := GetLoginToken(miniUser)
-	if err != nil {
-		services.Log.Debug("error in auth controller:", err)
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal server error",
-		})
-	}
 
-	services.Log.Info("User logged in:", miniUser)
-	ctx.Cookie(getCookie(&loginToken))
-	return ctx.Status(fiber.StatusOK).JSON(miniUser)
-}
+@auth_bp.route("/signup", methods=["POST"])
+async def onSignup():
+    try:
+        return "signup"
+    except Exception as e:
+        logger_service.error(f"error in user controller: {e}")
+        return jsonify({"message": f"Internal error"}), 500
 
-func OnLogout(ctx *fiber.Ctx) error {
-	return nil
-}
 
-func getMiniUser(loggedinUser *models.User) *dtos.UserDTO {
-	miniUser := dtos.UserDTO{
-		ID:       loggedinUser.ID,
-		Username: loggedinUser.Username,
-		Fullname: loggedinUser.Fullname,
-		ImgUrl:   loggedinUser.ImgUrl,
-	}
-	return &miniUser
-}
-
-func getCookie(loginToken *string) *fiber.Cookie {
-	cookie := &fiber.Cookie{
-		Name:     "loginToken",
-		Value:    *loginToken,
-		Secure:   true,
-		SameSite: "None",
-	}
-	return cookie
-}
+@auth_bp.route("/logout", methods=["POST"])
+async def onLogout():
+    try:
+        return "logout"
+    except Exception as e:
+        logger_service.error(f"error in user controller: {e}")
+        return jsonify({"message": f"Internal error"}), 500
