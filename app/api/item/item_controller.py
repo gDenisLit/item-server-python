@@ -8,6 +8,12 @@ from app.services import logger_service
 
 item_bp = Blueprint("item", __name__)
 
+@item_bp.before_request
+def log():
+    # Log something before each request
+    logger_service.info('Got request to item api')
+    return
+
 
 @item_bp.route("/", methods=["GET"])
 async def get_items():
