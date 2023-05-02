@@ -4,7 +4,7 @@ from .item_service import query, get_by_id, remove, update, add
 from app.models.FilterBy_model import FilterBy
 from app.encoders.Item_encoder import ItemEncoder
 from app.dtos.Item_dto import ItemDTO
-from app.models.Item_model import Item
+from app.services import logger_service
 
 item_bp = Blueprint("item", __name__)
 
@@ -19,7 +19,7 @@ async def get_items():
         json_data = json.dumps(items, cls=ItemEncoder)
         return json_data, 200
     except Exception as e:
-        print(f"error in item controller: {e}")
+        logger_service.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal server error"}), 500
 
 
@@ -30,7 +30,7 @@ async def get_item_by_id(item_id):
         json_data = json.dumps(item, cls=ItemEncoder)
         return json_data, 200
     except Exception as e:
-        print(f"error: {e}")
+        logger_service.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
 
 
@@ -40,7 +40,7 @@ async def remove_item(item_id):
         id = await remove(item_id)
         return jsonify({"removedId": id}), 201
     except Exception as e:
-        print(f"error in item controller: {e}")
+        logger_service.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
 
 
@@ -58,7 +58,7 @@ async def add_item():
         json_data = json.dumps(item, cls=ItemEncoder)
         return json_data, 201
     except Exception as e:
-        print(f"error in item controller: {e}")
+        logger_service.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
 
 
@@ -77,5 +77,5 @@ async def update_item():
         json_data = json.dumps(item, cls=ItemEncoder)
         return json_data, 201
     except Exception as e:
-        print(f"error in item controller: {e}")
+        logger_service.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
