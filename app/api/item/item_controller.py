@@ -1,9 +1,7 @@
-import json
 from flask import jsonify, Blueprint, request
 from .item_service import query, get_by_id, remove, update, add
 from app.models.FilterBy_model import FilterBy
-from app.encoders.Item_encoder import ItemEncoder
-from app.services import logger_service
+from app.services import logger
 from app.models.Item_model import Item
 
 item_bp = Blueprint("item", __name__)
@@ -12,7 +10,7 @@ item_bp = Blueprint("item", __name__)
 @item_bp.before_request
 def log():
     # Log something before each request
-    logger_service.info('Got request to item api')
+    logger.info('Got request to item api')
     return
 
 
@@ -25,7 +23,7 @@ async def get_items():
         items = await query(filter_by)
         return jsonify(items), 200
     except Exception as e:
-        logger_service.error(f"error in item controller: {e}")
+        logger.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal server error"}), 500
 
 
@@ -33,12 +31,9 @@ async def get_items():
 async def get_item_by_id(item_id: str):
     try:
         item = await get_by_id(item_id)
-        if not item:
-            return jsonify({"error": f"Item not found"}), 403
-
         return jsonify(item.to_dict()), 200
     except Exception as e:
-        logger_service.error(f"error in item controller: {e}")
+        logger.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
 
 
@@ -48,7 +43,7 @@ async def remove_item(item_id: str):
         res = await remove(item_id)
         return jsonify(res), 201
     except Exception as e:
-        logger_service.error(f"error in item controller: {e}")
+        logger.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
 
 
@@ -61,14 +56,10 @@ async def add_item():
             body["price"],
             body["imgUrl"]
         )
-
         item = await add(item_dto)
-        if not item:
-            return jsonify({"error": f"Invalid ID"}), 403
-        
         return jsonify(item.to_dict()), 201
     except Exception as e:
-        logger_service.error(f"error in item controller: {e}")
+        logger.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500
 
 
@@ -85,7 +76,10 @@ async def update_item():
         )
 
         item = await update(id, item_dto)
+        if not item:
+            return jsonify({"error": f"Invalid ID"}), 403
+        
         return jsonify(item.to_dict()), 201
     except Exception as e:
-        logger_service.error(f"error in item controller: {e}")
+        logger.error(f"error in item controller: {e}")
         return jsonify({"message": f"Internal error"}), 500

@@ -24,6 +24,7 @@ async def get_by_id(id: str) -> Item:
     collection = db_service.get_collection(collection_name)
     item = collection.find_one({"_id": ObjectId(id)})
     item = Item(**item)
+    return item
 
 
 async def remove(id: str) -> dict[str, str | int]:
