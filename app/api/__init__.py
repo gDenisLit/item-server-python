@@ -1,22 +1,21 @@
-from .item.controller import item_bp
-from .auth.controller import auth_bp
-from .user.controller import user_bp
+from .item.item_routes import ItemRoutes
+from .auth.auth_routes import AuthRoutes
+from .user.user_routes import UserRoutes
 
+item = ItemRoutes()
+auth = AuthRoutes()
+user = UserRoutes()
 
-class ApiRoutes:
-    def __init__(self):
-        self.item = {
-            "blueprint": item_bp,
-            "url_prefix": "/api/item"
-        }
-        self.auth = {
-            "blueprint": auth_bp,
-            "url_prefix": "/api/auth"
-        }
-        self.user = {
-            "blueprint": user_bp,
-            "url_prefix": "/api/user"
-        }
-
-
-routes = ApiRoutes()
+class Blueprints:
+    item = {
+        "blueprint": item.blueprint,
+        "url_prefix": "/api/item"
+    }
+    auth = {
+        "blueprint": auth.blueprint,
+        "url_prefix": "/api/auth"
+    }
+    user = {
+        "blueprint": user.blueprint,
+        "url_prefix": "/api/user"
+    }

@@ -6,13 +6,14 @@ from typing import List
 
 
 class ItemService:
-    def __init__(self):
-        self.collection_name = "item"
-        self.collection = self._get_collection()
 
-    async def query(self, filter_by: FilterBy) -> List[dict[str, str]]:
-        criteria = self._build_criteria(filter_by)
-        cursor = self.collection.find(criteria)
+    collection_name = "item"
+
+    @staticmethod
+    async def query(filter_by: FilterBy) -> List[dict[str, str]]:
+        collection = ItemService._get_collection()
+        criteria = ItemService._build_criteria(filter_by)
+        cursor = collection.find(criteria)
 
         items = []
         for document in cursor:
@@ -21,27 +22,35 @@ class ItemService:
 
         return items
 
-    async def get_by_id(self, id: str) -> Item:
+    @staticmethod
+    async def get_by_id(id: str) -> Item:
         try:
-            item = self.collection.find_one({"_id": ObjectId(id)})
+            collection = ItemService._get_collection()
+            item = collection.find_one({"_id": ObjectId(id)})
             return Item(**item) if item else None
         except:
             raise ValueError("Invalid id")
 
-    async def remove(self, id: str) -> str:
+    @staticmethod
+    async def remove(id: str) -> str:
         try:
-            self.collection.delete_one({"_id": ObjectId(id)})
+            collection = ItemService._get_collection()
+            collection.delete_one({"_id": ObjectId(id)})
             return id
         except:
             raise ValueError("Invalid id")
 
-    async def add(self, item_dto: dict[str, str]) -> Item:
-        self.collection.insert_one(item_dto)
+    @staticmethod
+    async def add(item_dto: dict[str, str]) -> Item:
+        collection = ItemService._get_collection()
+        collection.insert_one(item_dto)
         return Item(**item_dto)
 
-    async def update(self, id: str, item_dto: dict[str, str]) -> Item:
+    @staticmethod
+    async def update(id: str, item_dto: dict[str, str]) -> Item:
         try:
-            self.collection.update_one(
+            collection = ItemService._get_collection()
+            collection.update_one(
                 {"_id": ObjectId(id)},
                 {"$set": item_dto}
             )
@@ -49,7 +58,8 @@ class ItemService:
         except:
             raise ValueError("Invalid item object")
 
-    def _build_criteria(self, filter_by):
+    @staticmethod
+    def _build_criteria(filter_by):
         criteria = {}
         if filter_by.txt:
             criteria['name'] = {
@@ -58,9 +68,10 @@ class ItemService:
             }
         return criteria
 
-    def _get_collection(self):
+    @staticmethod
+    def _get_collection():
         try:
-            collection = db.get_collection(self.collection_name)
+            collection = db.get_collection(ItemService.collection_name)
             return collection
         except Exception as e:
             logger.error(f"error in item service: {e}")

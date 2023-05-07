@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, make_response
 
 
 class ResponseService:
@@ -36,3 +36,26 @@ class ResponseService:
             "message": message
         }
         return jsonify(response), status
+
+    @staticmethod
+    def login_success(token: str, data=None, status=200):
+        response = make_response(jsonify({
+            "message": "Login successfull",
+            "status": status,
+            "data": data
+        }))
+        response.set_cookie(
+            "loginToken",
+            value=token,
+            httponly=True
+        )
+        return response, status
+
+    @staticmethod
+    def logout_success(status=200):
+        response = make_response(jsonify({
+            "message": "Logged out succesfully",
+            "status": status
+        }))
+        response.delete_cookie("loginToken")
+        return response, 200
