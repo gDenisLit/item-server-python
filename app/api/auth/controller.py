@@ -1,7 +1,8 @@
 from flask import jsonify, Blueprint, request
-from app.services import logger
-from .auth_service import login, signup
+from app.services import logger, response
+from . import auth_service
 from app.models.User_model import User
+
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -22,13 +23,13 @@ async def onLogin():
             body["password"]
         )
 
-        user = await login(credentials)
+        user = await auth_service.login(credentials)
         logger.info(f"user loggedin | {user.to_dict()}")
+        return response.success()
 
-        return jsonify(user.to_dict()), 203
     except Exception as e:
         logger.error(f"error in auth controller: {e}")
-        return jsonify({"message": f"Internal error"}), 500
+        return response.server_error()
 
 
 @auth_bp.route("/signup", methods=["POST"])
@@ -43,13 +44,13 @@ async def onSignup():
             body["isAdmin"]
         )
 
-        user = await signup(credentials)
+        user = await auth_service.signup(credentials)
         logger.info(f"new accout | {user.to_dict()}")
+        return response.success()
 
-        return jsonify(user.to_dict()), 203
     except Exception as e:
         logger.error(f"error in auth controller: {e}")
-        return jsonify({"message": f"Internal error"}), 500
+        return response.server_error()
 
 
 @auth_bp.route("/logout", methods=["POST"])
@@ -58,4 +59,4 @@ async def onLogout():
         return "logout"
     except Exception as e:
         logger.error(f"error in auth controller: {e}")
-        return jsonify({"message": f"Internal error"}), 500
+        return response.server_error()

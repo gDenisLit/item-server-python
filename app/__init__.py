@@ -1,21 +1,28 @@
-import os
 from flask import Flask
-from dotenv import load_dotenv
-from app.api.item.item_controller import item_bp
-from app.api.auth.auth_controller import auth_bp
+from .config import config
+from .api import routes
 
 
-def init_app():
-    load_dotenv()
+class ItemServer:
+    def __init__(self):
+        self.app = Flask(__name__)
+        self.port = config.port
+        self.debug = config.dev_env
 
-    app = Flask(__name__)
-    port = os.getenv("PORT")
-    debug = os.getenv("DEV_ENV")
+        self.register_routes()
 
-    @app.route("/health", methods=["GET"])
-    def health(): return "OK"
+    def register_routes(self):
+        @self.app.route("/health", methods=["GET"])
+        def health(): return "OK"
 
-    app.register_blueprint(item_bp, url_prefix="/api/item")
-    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+        self.app.register_blueprint(**routes.item)
+        self.app.register_blueprint(**routes.auth)
+        self.app.register_blueprint(**routes.user)
 
-    app.run(port=port, debug=debug)
+    def run(self):
+        self.app.run(
+            port=self.port,
+            debug=self.debug
+        )
+
+

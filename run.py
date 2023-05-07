@@ -1,5 +1,5 @@
-from app import init_app
-
+from app import ItemServer
 
 if __name__ == "__main__":
-    init_app()
+    server = ItemServer()
+    server.run()

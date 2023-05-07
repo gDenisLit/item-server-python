@@ -1,8 +1,9 @@
 from flask import jsonify, Blueprint, request
-from .item_service import query, get_by_id, remove, update, add
 from app.models.FilterBy_model import FilterBy
-from app.services import logger
+from app.services import logger, response
 from app.models.Item_model import Item
+from . import item_service
+
 
 item_bp = Blueprint("item", __name__)
 
@@ -20,31 +21,31 @@ async def get_items():
         filter_by = FilterBy(
             txt=request.args.get("txt", "")
         )
-        items = await query(filter_by)
-        return jsonify(items), 200
+        items = await item_service.query(filter_by)
+        return response.success(items)
     except Exception as e:
         logger.error(f"error in item controller: {e}")
-        return jsonify({"message": f"Internal server error"}), 500
+        return response.server_error()
 
 
 @item_bp.route("/<item_id>", methods=["GET"])
 async def get_item_by_id(item_id: str):
     try:
-        item = await get_by_id(item_id)
-        return jsonify(item.to_dict()), 200
+        item = await item_service.get_by_id(item_id)
+        return response.success(item.to_dict())
     except Exception as e:
         logger.error(f"error in item controller: {e}")
-        return jsonify({"message": f"Internal error"}), 500
+        return response.server_error()
 
 
 @item_bp.route("/<item_id>", methods=["DELETE"])
 async def remove_item(item_id: str):
     try:
-        res = await remove(item_id)
-        return jsonify(res), 201
+        removed_id = await item_service.remove(item_id)
+        return response.success(removed_id)
     except Exception as e:
         logger.error(f"error in item controller: {e}")
-        return jsonify({"message": f"Internal error"}), 500
+        return response.server_error()
 
 
 @item_bp.route("/", methods=["POST"])
@@ -56,11 +57,12 @@ async def add_item():
             body["price"],
             body["imgUrl"]
         )
-        item = await add(item_dto)
-        return jsonify(item.to_dict()), 201
+
+        item = await item_service.add(item_dto)
+        return response.created(item.to_dict())
     except Exception as e:
         logger.error(f"error in item controller: {e}")
-        return jsonify({"message": f"Internal error"}), 500
+        return response.server_error()
 
 
 @item_bp.route("/", methods=["PUT"])
@@ -75,11 +77,11 @@ async def update_item():
             body["imgUrl"]
         )
 
-        item = await update(id, item_dto)
+        item = await item_service.update(id, item_dto)
         if not item:
             return jsonify({"error": f"Invalid ID"}), 403
-        
-        return jsonify(item.to_dict()), 201
+
+        return response.created(item.to_dict())
     except Exception as e:
         logger.error(f"error in item controller: {e}")
-        return jsonify({"message": f"Internal error"}), 500
+        return response.server_error()
