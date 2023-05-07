@@ -9,7 +9,7 @@ class AuthService:
         error_msg = "Wrong credentials"
 
         user = await user_service.get_by_username(credentials["username"])
-        if not user:
+        if user:
             raise ValueError(error_msg)
 
         correct = bcrypt.checkpw(
@@ -23,15 +23,14 @@ class AuthService:
         return user
 
     async def signup(self, credentials: dict[str, str]) -> User:
-        salt_rounds = 10
 
-        username_is_taken = await user_service.get_by_username(credentials["username"])
-        if username_is_taken:
+        user = await user_service.get_by_username(credentials["username"])
+        if user:
             raise ValueError("username is already taken")
 
         hashed_password = bcrypt.hashpw(
             credentials["password"].encode(),
-            bcrypt.gensalt(salt_rounds)
+            bcrypt.gensalt(10)
         )
         credentials["password"] = hashed_password
         return await user_service.add_user(credentials)

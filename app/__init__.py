@@ -1,6 +1,7 @@
 from flask import Flask
 from .config import config
 from .api import routes
+from .services import response
 
 
 class ItemServer:
@@ -13,7 +14,7 @@ class ItemServer:
 
     def register_routes(self):
         @self.app.route("/health", methods=["GET"])
-        def health(): return "OK"
+        def health(): return response.success()
 
         self.app.register_blueprint(**routes.item)
         self.app.register_blueprint(**routes.auth)
@@ -24,5 +25,3 @@ class ItemServer:
             port=self.port,
             debug=self.debug
         )
-
-

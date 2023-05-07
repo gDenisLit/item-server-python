@@ -30,9 +30,9 @@ class ResponseService:
         return jsonify(response), status
 
     @staticmethod
-    def bad_request(status=400):
+    def bad_request(message="Bad request", status=400):
         response = {
             "status": status,
-            "message": "The request could not be understood or was missing required parameters"
+            "message": message
         }
         return jsonify(response), status

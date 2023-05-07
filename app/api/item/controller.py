@@ -24,7 +24,7 @@ async def get_items():
         items = await item_service.query(filter_by)
         return response.success(items)
     except Exception as e:
-        logger.error(f"error in item controller: {e}")
+        logger.error(f"had error in item controller: {e}")
         return response.server_error()
 
 
@@ -33,8 +33,10 @@ async def get_item_by_id(item_id: str):
     try:
         item = await item_service.get_by_id(item_id)
         return response.success(item.to_dict())
+    except ValueError:
+        return response.bad_request()
     except Exception as e:
-        logger.error(f"error in item controller: {e}")
+        logger.error(f"had error in item controller: {e}")
         return response.server_error()
 
 
@@ -43,45 +45,56 @@ async def remove_item(item_id: str):
     try:
         removed_id = await item_service.remove(item_id)
         return response.success(removed_id)
+    except ValueError:
+        return response.bad_request()
     except Exception as e:
-        logger.error(f"error in item controller: {e}")
+        logger.error(f"had error in item controller: {e}")
         return response.server_error()
 
 
 @item_bp.route("/", methods=["POST"])
 async def add_item():
     try:
-        body = request.get_json()
-        item_dto = Item.item_dto(
-            body["name"],
-            body["price"],
-            body["imgUrl"]
-        )
-
+        item_dto = _get_item_dto()
         item = await item_service.add(item_dto)
         return response.created(item.to_dict())
+    except ValueError:
+        return response.bad_request()
     except Exception as e:
-        logger.error(f"error in item controller: {e}")
+        logger.error(f"had error in item controller: {e}")
         return response.server_error()
 
 
 @item_bp.route("/", methods=["PUT"])
 async def update_item():
     try:
-        body = request.get_json()
-        id = body["_id"]
+        id = _get_id()
+        item_dto = _get_item_dto()
+        item = await item_service.update(id, item_dto)
+        return response.created(item.to_dict())
+    except ValueError:
+        return response.bad_request()
+    except Exception as e:
+        logger.error(f"had error in item controller: {e}")
+        return response.server_error()
 
+
+def _get_item_dto():
+    try:
+        body = request.get_json()
         item_dto = Item.item_dto(
             body["name"],
             body["price"],
             body["imgUrl"]
         )
+        return item_dto
+    except:
+        raise ValueError("")
 
-        item = await item_service.update(id, item_dto)
-        if not item:
-            return jsonify({"error": f"Invalid ID"}), 403
 
-        return response.created(item.to_dict())
-    except Exception as e:
-        logger.error(f"error in item controller: {e}")
-        return response.server_error()
+def _get_id():
+    try:
+        body = request.get_json()
+        return body["_id"]
+    except:
+        raise ValueError("")
