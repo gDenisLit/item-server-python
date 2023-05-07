@@ -29,5 +29,3 @@ class LoggerService:
 
         self.logger.addHandler(fh)
         self.logger.addHandler(sh)
-
-        print("LoggerService initialized")

@@ -23,8 +23,7 @@ async def query(filter_by: FilterBy) -> List[dict[str, str]]:
 async def get_by_id(id: str) -> Item:
     collection = db_service.get_collection(collection_name)
     item = collection.find_one({"_id": ObjectId(id)})
-    item = Item(**item)
-    return item
+    return Item(**item) if item else None
 
 
 async def remove(id: str) -> dict[str, str | int]:
@@ -38,23 +37,18 @@ async def remove(id: str) -> dict[str, str | int]:
 
 async def add(item_dto: dict[str, str]) -> Item:
     collection = db_service.get_collection(collection_name)
-    res = collection.insert_one(item_dto)
-
-    item_dto["_id"] = res.inserted_id
-    item = Item(**item_dto)
-    return item
+    collection.insert_one(item_dto)
+    return Item(**item_dto)
 
 
 async def update(id: str, item_dto: dict[str, str]) -> Item:
     collection = db_service.get_collection(collection_name)
     collection.update_one({"_id": ObjectId(id)}, {"$set": item_dto})
-
-    item = Item(_id=id, **item_dto)
-    return item
+    return Item(id, **item_dto)
 
 
 def _build_criteria(filter_by):
     criteria = {}
     if filter_by.txt:
-        criteria['name'] = {'$regex': filter_by['txt'], '$options': 'i'}
+        criteria['name'] = {'$regex': filter_by.txt, '$options': 'i'}
     return criteria

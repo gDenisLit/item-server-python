@@ -23,10 +23,11 @@ class User:
         }
 
     @staticmethod
-    def signup_credentials(username: str, password: str, fullname: str, imgUrl: str):
+    def signup_credentials(username: str, password: str, fullname: str, imgUrl: str, isAdmin: bool):
         return {
             "username": username,
             "password": password,
             "fullname": fullname,
-            "imgUrl": imgUrl
+            "imgUrl": imgUrl,
+            "isAdmin": isAdmin
         }
