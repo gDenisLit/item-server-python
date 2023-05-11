@@ -6,46 +6,44 @@ class ItemRoutes:
     module_name = "item"
     routes = [
         {
-            "endpoint": "/",
+            "url": "/",
+            "endpoint": "get_items",
             "methods": ["GET"],
-            "handler": ItemController.get_items
+            "handler": ItemController.get_items,
         },
         {
-            "endpoint": "/<item_id>",
+            "url": "/<item_id>",
+            "endpoint": "get_item_by_id",
             "methods": ["GET"],
-            "handler": ItemController.get_item_by_id
+            "handler": ItemController.get_item_by_id,
         },
         {
-            "endpoint": "/<item_id>",
+            "url": "/<item_id>",
+            "endpoint": "remove_item",
             "methods": ["DELETE"],
-            "handler": ItemController.remove_item
+            "handler": ItemController.remove_item,
         },
         {
-            "endpoint": "/",
+            "url": "/",
+            "endpoint": "add_item",
             "methods": ["POST"],
-            "handler": ItemController.add_item
+            "handler": ItemController.add_item,
         },
         {
-            "endpoint": "/",
+            "url": "/",
+            "endpoint": "update_item",
             "methods": ["PUT"],
-            "handler": ItemController.update_item
+            "handler": ItemController.update_item,
         },
     ]
 
     def __init__(self):
         self.blueprint = Blueprint(ItemRoutes.module_name, __name__)
+
         for route in self.routes:
-            self.register_route(route)
-            self.add_rule(route)
-
-    def register_route(self, route):
-        self.blueprint.route(
-            rule=route["endpoint"],
-            methods=route["methods"],
-        )(route["handler"])
-
-    def add_rule(self, route):
-        self.blueprint.add_url_rule(
-            route["endpoint"],
-            view_func=route["handler"]
-        )
+            self.blueprint.add_url_rule(
+                route['url'],
+                endpoint=route['endpoint'],
+                view_func=route['handler'],
+                methods=route['methods']
+            )

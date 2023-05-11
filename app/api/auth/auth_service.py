@@ -58,6 +58,7 @@ class AuthService:
                 config.secret_key,
                 algorithms=[config.algo]
             )
-            return user
+            if user:
+                return await UserService.get_by_username(user["username"])
         except DecodeError:
             raise ValueError("Invalid login token")

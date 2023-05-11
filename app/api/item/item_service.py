@@ -27,7 +27,9 @@ class ItemService:
         try:
             collection = ItemService._get_collection()
             item = collection.find_one({"_id": ObjectId(id)})
-            return Item(**item) if item else None
+            if not item:
+                raise ValueError("Invalid id")
+            return Item(**item)
         except:
             raise ValueError("Invalid id")
 

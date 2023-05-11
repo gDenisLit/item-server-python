@@ -69,7 +69,6 @@ class AuthController:
                 body["password"],
                 body["fullname"],
                 body["imgUrl"],
-                body["isAdmin"]
             )
             return credentials
         except:

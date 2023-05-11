@@ -3,11 +3,13 @@ from app.models.FilterBy_model import FilterBy
 from app.services import logger, response
 from app.models.Item_model import Item
 from .item_service import ItemService
+from app.middlewares import Middlewares
 
 
 class ItemController:
 
     @staticmethod
+    @Middlewares.log
     async def get_items():
         try:
             filter_by = FilterBy(
@@ -24,19 +26,20 @@ class ItemController:
         try:
             item = await ItemService.get_by_id(item_id)
             return response.success(item.to_dict())
-        except ValueError:
-            return response.bad_request()
+        except ValueError as e:
+            return response.bad_request(f"{e}")
         except Exception as e:
             logger.error(f"had error in item controller: {e}")
             return response.server_error()
 
     @staticmethod
+    @Middlewares.auth
     async def remove_item(item_id: str):
         try:
             removed_id = await ItemService.remove(item_id)
             return response.success(removed_id)
-        except ValueError:
-            return response.bad_request()
+        except ValueError as e:
+            return response.bad_request(f"{e}")
         except Exception as e:
             logger.error(f"had error in item controller: {e}")
             return response.server_error()
@@ -47,8 +50,8 @@ class ItemController:
             item_dto = ItemController._get_item_dto()
             item = await ItemService.add(item_dto)
             return response.created(item.to_dict())
-        except ValueError:
-            return response.bad_request()
+        except ValueError as e:
+            return response.bad_request(f"{e}")
         except Exception as e:
             logger.error(f"had error in item controller: {e}")
             return response.server_error()
@@ -60,8 +63,8 @@ class ItemController:
             item_dto = ItemController._get_item_dto()
             item = await ItemService.update(id, item_dto)
             return response.created(item.to_dict())
-        except ValueError:
-            return response.bad_request()
+        except ValueError as e:
+            return response.bad_request(f"{e}")
         except Exception as e:
             logger.error(f"had error in item controller: {e}")
             return response.server_error()
@@ -77,7 +80,7 @@ class ItemController:
             )
             return item_dto
         except:
-            raise ValueError()
+            raise ValueError("Invalid item object")
 
     @staticmethod
     def _get_id():
@@ -85,4 +88,4 @@ class ItemController:
             body = request.get_json()
             return body["_id"]
         except:
-            raise ValueError()
+            raise ValueError("Invalid id")

@@ -1,5 +1,5 @@
 class User:
-    def __init__(self, _id: str, username: str, password: str, fullname: str, imgUrl: str, isAdmin: bool):
+    def __init__(self, _id: str, username: str, password: str, fullname: str, imgUrl: str, isAdmin: bool = False):
         self._id = _id
         self.username = username
         self.password = password
@@ -23,11 +23,11 @@ class User:
         }
 
     @staticmethod
-    def signup_credentials(username: str, password: str, fullname: str, imgUrl: str, isAdmin: bool):
+    def signup_credentials(username: str, password: str, fullname: str, imgUrl: str):
         return {
             "username": username,
             "password": password,
             "fullname": fullname,
             "imgUrl": imgUrl,
-            "isAdmin": isAdmin
+            "isAdmin": False
         }

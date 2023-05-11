@@ -22,22 +22,6 @@ class ResponseService:
         return jsonify(response), status
 
     @staticmethod
-    def server_error(status=500):
-        response = {
-            "status": status,
-            "message": "Internal server error"
-        }
-        return jsonify(response), status
-
-    @staticmethod
-    def bad_request(message="Bad request", status=400):
-        response = {
-            "status": status,
-            "message": message
-        }
-        return jsonify(response), status
-
-    @staticmethod
     def login_success(token: str, data=None, status=200):
         response = make_response(jsonify({
             "message": "Login successfull",
@@ -59,3 +43,27 @@ class ResponseService:
         }))
         response.delete_cookie("loginToken")
         return response, 200
+
+    @staticmethod
+    def bad_request(message="Bad request", status=400):
+        response = {
+            "status": status,
+            "message": message
+        }
+        return jsonify(response), status
+
+    @staticmethod
+    def unauthorized(message="Unauthorized", status=401):
+        response = {
+            "status": status,
+            "message": message
+        }
+        return jsonify(response), status
+
+    @staticmethod
+    def server_error(status=500):
+        response = {
+            "status": status,
+            "message": "Internal server error"
+        }
+        return jsonify(response), status
