@@ -88,12 +88,12 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2023-05-11T12:41:59.208Z",
-    "modified": "2023-05-11T12:43:25.106Z",
+    "modified": "2023-05-11T16:29:28.234Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n  \"username\": \"puki\",\n  \"password\": \"123\"\n}",
+      "raw": "{\n  \"username\": \"denis\",\n  \"password\": \"123\"\n}",
       "form": []
     },
     "tests": []
@@ -164,11 +164,11 @@
     "colId": "61c7ef2c-475a-4df5-9859-7edc89904ac5",
     "containerId": "",
     "name": "remove user",
-    "url": "127.0.0.1:3030/api/user/645ce34c9b4c0be929a813e7",
+    "url": "127.0.0.1:3030/api/user/6457e9738ba6067965ee5119",
     "method": "DELETE",
     "sortNum": 30000,
     "created": "2023-05-11T12:46:05.910Z",
-    "modified": "2023-05-11T12:47:36.111Z",
+    "modified": "2023-05-11T16:29:57.998Z",
     "headers": [],
     "params": [],
     "tests": []

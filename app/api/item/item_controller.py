@@ -1,15 +1,15 @@
-from flask import request
+from flask import request, g
 from app.models.FilterBy_model import FilterBy
 from app.services import logger, response
 from app.models.Item_model import Item
 from .item_service import ItemService
 from app.middlewares import Middlewares
+from app.models.User_model import User
 
 
 class ItemController:
 
     @staticmethod
-    @Middlewares.log
     async def get_items():
         try:
             filter_by = FilterBy(
@@ -45,6 +45,7 @@ class ItemController:
             return response.server_error()
 
     @staticmethod
+    @Middlewares.auth
     async def add_item():
         try:
             item_dto = ItemController._get_item_dto()
@@ -57,6 +58,7 @@ class ItemController:
             return response.server_error()
 
     @staticmethod
+    @Middlewares.auth
     async def update_item():
         try:
             id = ItemController._get_id()

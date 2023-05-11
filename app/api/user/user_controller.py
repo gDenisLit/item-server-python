@@ -1,10 +1,13 @@
 from app.services import logger, response
 from .user_service import UserService
+from app.middlewares import Middlewares
 
 
 class UserController:
 
     @staticmethod
+    @Middlewares.log
+    @Middlewares.admin
     async def get_users():
         try:
             users = await UserService.query()
@@ -14,6 +17,8 @@ class UserController:
             return response.server_error()
 
     @staticmethod
+    @Middlewares.log
+    @Middlewares.admin
     async def get_user_by_id(user_id: str):
         try:
             user = await UserService.get_by_id(user_id)
@@ -25,6 +30,8 @@ class UserController:
             return response.server_error()
 
     @staticmethod
+    @Middlewares.log
+    @Middlewares.admin
     async def remove_user(user_id: str):
         try:
             removed_id = await UserService.remove(user_id)
