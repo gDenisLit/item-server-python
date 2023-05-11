@@ -8,3 +8,4 @@ class Config:
         self.secret_key = os.getenv("CRYPTER_KEY")
         self.port = os.getenv("PORT")
         self.dev_env = os.getenv("DEV_ENV")
+        self.algo = os.getenv("ENCODE_ALGO")

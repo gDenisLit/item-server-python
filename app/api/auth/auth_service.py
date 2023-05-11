@@ -46,7 +46,7 @@ class AuthService:
         token = jwt.encode(
             user.to_dict(),
             config.secret_key,
-            algorithm="HS256"
+            algorithm=config.algo
         )
         return token
 
@@ -56,7 +56,7 @@ class AuthService:
             user = jwt.decode(
                 token,
                 config.secret_key,
-                algorithms=["HS256"]
+                algorithms=[config.algo]
             )
             return user
         except DecodeError:
