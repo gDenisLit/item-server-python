@@ -68,13 +68,14 @@ Boolean - run the server in debug mode
 
 ## API Reference
 
+### Item
 #### Get all items
 
 ```http
   GET /api/item
 ```
 
-#### Get item
+#### Get item by id
 
 ```http
   GET /api/item/${id}
@@ -95,7 +96,37 @@ Boolean - run the server in debug mode
   DELETE /api/item/${id}
 ```
 
+### Auth
+#### Login
+```http
+  POST /api/auth/login
+```
 
+#### Signup
+```http
+  POST /api/auth/signup
+```
+
+#### Logout
+```http
+  POST /api/auth/login
+```
+
+### User
+#### Get users
+```http
+  GET /api/user
+```
+
+#### Get user by id
+```http
+  GET /api/user/${id}
+```
+
+#### Remove user
+```http
+  DELETE /api/user/${id}
+```
 ## Authors
 
 - [@gDenislit](https://www.github.com/gDenislit)
