@@ -38,6 +38,10 @@ Start the server in dev enviroment
   make run
 ```
 
+## Test with Postman
+`Workspace url`
+https://www.postman.com/avionics-technologist-70163286/workspace/item-server/overview
+
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
