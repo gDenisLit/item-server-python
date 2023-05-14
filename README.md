@@ -60,6 +60,12 @@ Base 64 secret key
 `ENCODE_ALGO`
 Algorithm type for jwt
 
+`PORT`
+Port for running the server
+
+`DEV_ENV`
+Boolean - run the server in debug mode
+
 ## API Reference
 
 #### Get all items
