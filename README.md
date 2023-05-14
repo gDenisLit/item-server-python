@@ -4,7 +4,7 @@
 This is a production-ready Python server built with the Flask framework. It provides RESTful API endpoints for managing items, users, and authentication. This is the Flask Python version of the Item App - A generic e2e app im building with various technologies, using Vue, React, Express, Go and Pyhton.
 
 
-![Basic server architecture](https://res.cloudinary.com/dokgseqgj/image/upload/v1683823793/item-server-architecture_ojhwhg.png)
+![Basic server architecture](https://res.cloudinary.com/dokgseqgj/image/upload/v1684052150/item-server-architecture2_s9zqjv.png)
 
 
 ## Tech Stack
