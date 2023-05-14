@@ -38,11 +38,11 @@ Start the server in dev enviroment
   make run
 ```
 
-## Test with Postman
+## Postman
+Bellow is a link to postman workspace. 
+The workspace already includes all the collections and endpoints you will need to test the server.
 
-```Workspace url
-https://www.postman.com/avionics-technologist-70163286/workspace/item-server/overview
-```
+[Go to Postman workspace](https://www.postman.com/avionics-technologist-70163286/workspace/item-server/overview)
 
 ## Environment Variables
 
